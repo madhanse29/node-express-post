@@ -3,6 +3,7 @@
 import  express  from 'express';
 import { MongoClient } from 'mongodb';
 import dotenv from "dotenv";
+import { moviesRouter} from './routes/movies.js';
 dotenv.config();
 const app = express();
 
@@ -87,7 +88,7 @@ async function createconnection(){
   return client;
 }
 
-const client = await createconnection();
+export const client = await createconnection();
 
 
 app.get('/', (request,response)=>{
@@ -96,90 +97,11 @@ app.get('/', (request,response)=>{
 // app.get('/movies', (request,response)=>{
 //     response.send(movies);
 // });
-app.get('/movies', async (request,response)=>{
-
-    const filter = request.query;
-    if(filter.rating){
-      filter.rating =parseInt(filter.rating)
-    }
-  
-    // console.log(language,rating)
-
-    // let filterMovies= movies; 
-
-    // if (language) {
-    //     filterMovies = filterMovies.filter((mv)=> mv.language === language)
-    // }
-    //    if (rating){
-    //    filterMovies = filterMovies.filter((mv)=> mv.rating === +rating)
-    //    }
-    const filterMovies = await client.db("b28wd").collection("movies").find(filter).toArray();
-    
-    response.send(filterMovies);
-    
- 
-});
-app.post("/movies",async (request,response)=> {
-  const data = request.body;
-  // console.log(data);
-  const result = await client.db("b28wd").collection("movies").insertMany(data)
-  response.send(result);
-})
-
-
-app.get('/movies/:id', async (request,response)=>{
-    const {id} = request.params;
-
-const movie = await getMoviesbyid(id)
-    // const movie = movies.find((mv)=> mv.id === id);
-    movie
-   ? response.send(movie)
-   : response.status(404).send({message:"no matching"})
-});
-
-
-app.delete('/movies/:id', async (request,response)=>{
-    const {id} = request.params;
-
-const result = await deleteMovies(id)
-    // const movie = movies.find((mv)=> mv.id === id);
-   result.deletedCount > 0
-   ? response.send(movie)
-   : response.status(404).send({message:"no matching"})
-});
-app.put('/movies/:id', async (request,response)=>{
-    const {id} = request.params;
-const data = request.body;
-const result = await editMovies(id, data);
-const movie = await getMoviesbyid(id)
-    // const movie = movies.find((mv)=> mv.id === id);
- response.send(movie);
-  //  ? response.send(movie)
-  //  : response.status(404).send({message:"no matching"})
-});
 
 
 
+app.use ("/movies",moviesRouter);
 
 app.listen(PORT,()=>console.log("app is started",PORT));
 
-async function deleteMovies(id) {
-  return await client
-    .db("b28wd")
-    .collection("movies")
-    .deleteOne({ id: id });
-}
 
-async function getMoviesbyid(id) {
-  return await client
-    .db("b28wd")
-    .collection("movies")
-    .findOne({ id: id });
-}
-
-async function editMovies(id, data) {
-  return await client
-    .db("b28wd")
-    .collection("movies")
-    .updateOne({ id: id }, { $set: data });
-}
