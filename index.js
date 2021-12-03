@@ -5,6 +5,10 @@ import { MongoClient } from 'mongodb';
 import dotenv from "dotenv";
 import { moviesRouter} from './routes/movies.js';
 import cors from "cors";
+
+import { usersRouter } from './routes/users.js';
+
+
 dotenv.config();
 const app = express();
 
@@ -75,8 +79,8 @@ const app = express();
 //   ]
 
 const PORT = process.env.PORT;
-app.use(cors())
-app.use(express.json());
+app.use(cors())//3rd party middleware
+app.use(express.json());//middleware
 
 //const MONGO_URL ="mongodb://localhost";
 const MONGO_URL = process.env.MONGO_URL;
@@ -103,6 +107,8 @@ app.get('/', (request,response)=>{
 
 
 app.use ("/movies",moviesRouter);
+app.use ("/users",usersRouter);
+
 
 app.listen(PORT,()=>console.log("app is started",PORT));
 

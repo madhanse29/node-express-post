@@ -1,12 +1,14 @@
 import express from "express";
 import { getMoviesbyid, deleteMovies, editMovies } from "../helper.js";
 import { client } from '../index.js';
+import { auth } from "../middleware/auth.js";
 const router = express.Router();
 
 
 
 
-router.get('/', async (request,response)=>{
+router
+.route("/").get(auth, async (request,response)=>{
 
     const filter = request.query;
     if(filter.rating){
