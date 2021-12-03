@@ -1,6 +1,6 @@
 // const express = require('express');
 
-import  express  from 'express';
+import  express, { request, response }  from 'express';
 import { MongoClient } from 'mongodb';
 import dotenv from "dotenv";
 import { moviesRouter} from './routes/movies.js';
@@ -108,6 +108,40 @@ app.get('/', (request,response)=>{
 
 app.use ("/movies",moviesRouter);
 app.use ("/users",usersRouter);
+
+
+// const recipes=[
+//   {name:"Briyani",
+// pic:"https://res.cloudinary.com/swiggy/image/upload/f_auto,q_auto,fl_lossy/baxmtz4go4slb7bm70op"}
+// ,{name:"Mandi",
+// pic:"https://www.nestle-family.com/sites/site.prod1.nestle-family.com/files/2020-09/chicken%20mandi%20mob.jpg"},
+// {name:"Shawarma",
+// pic:"https://res.cloudinary.com/swiggy/image/upload/f_auto,q_auto,fl_lossy/ftqzzih4f52e1anjyjxr"},
+// {name:"Beef fry",
+// pic:"https://1.bp.blogspot.com/-4TwWAI1qHkI/Wu7nL8HJzMI/AAAAAAAAW_Q/Q9-9Nh_xLKEJfF85EollzXZgDWiS3z3uQCLcBGAs/s1600/beef%2Bfry%2B1i.JPG"}
+// ]
+
+
+app.get("/recipes",async (request,response)=>{
+const recipes = await client
+  . db("b28wd")
+  .collection("recipes")
+  .find({})
+  .toArray();
+
+  response.send(recipes)
+  ;
+});
+
+app.post("/recipes",async (request,response)=> {
+  const data = request.body;
+  // console.log(data);
+  const result = await client
+  .db("b28wd")
+  .collection("recipes")
+  .insertMany(data)
+  response.send(result);
+})
 
 
 app.listen(PORT,()=>console.log("app is started",PORT));
