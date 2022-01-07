@@ -8,7 +8,7 @@ const router = express.Router();
 
 
 router
-.route("/").get(auth, async (request,response)=>{
+.route("/").get(async (request,response)=>{
 
     const filter = request.query;
     if(filter.rating){
